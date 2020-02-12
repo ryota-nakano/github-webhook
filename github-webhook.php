@@ -35,7 +35,7 @@ if(hash_equals($hmac,$sig)){
 	# クローンされていない場合
 	else{
 		exec("git clone {$clone_url}");
-		$log = "{$date} {$adder}: リポジトリをクローンしました。";
+		$log = "{$date} {$adder}: {$dir}をクローンしました。";
 	}
 }
 # Github以外からのアクセス
