@@ -24,18 +24,21 @@ if(hash_equals($hmac,$sig)){
 	$dir = $payload['repository']['name'];
 	$clone_url = str_replace('https://', "https://{$USER}:{$PASS}@", $payload['repository']['clone_url']);
 	$ref = $payload['ref'];# ブランチ判定
-	# 既にクローンされている場合
-	if(is_dir($dir)){
-		$log = "{$date} {$adder}: {$ref} がプッシュされました。";
-		if($ref=='refs/heads/master'){
-			exec("cd {$dir};git pull origin master");
-			$log.= "{$dir}にmasterをプルしました。";
-		}
-	}
-	# クローンされていない場合
-	else{
-		exec("git clone {$clone_url}");
-		$log = "{$date} {$adder}: {$dir}をクローンしました。";
+	switch($ref){
+		case 'refs/heads/master':# マスターブランチ
+			# 既にクローンされている場合
+			if(is_dir($dir)){
+				exec("cd {$dir};git pull origin master");
+				$log = "{$date} {$adder}: {$dir}にmasterをプルしました。";
+			}
+			# クローンされていない場合
+			else{
+				exec("git clone {$clone_url}");
+				$log = "{$date} {$adder}: {$dir}をクローンしました。";
+			}
+			break;
+		default:# それ以外のブランチ
+			$log = "{$date} {$adder}: {$ref} がプッシュされました。";
 	}
 }
 # Github以外からのアクセス
