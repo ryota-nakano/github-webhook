@@ -19,7 +19,7 @@ $date = date("[Y-m-d H:i:s]");# 日付
 $adder = $_SERVER['REMOTE_ADDR'];# 訪問者のIPアドレス
 
 # Githubからのアクセス
-if(hash_equals($hmac,$sig)){
+if(@hash_equals($hmac,$sig)){
 	$payload = json_decode($_POST['payload'],true);
 	$dir = $payload['repository']['name'];
 	$clone_url = str_replace('https://', "https://{$USER}:{$PASS}@", $payload['repository']['clone_url']);
