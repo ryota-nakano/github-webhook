@@ -1,16 +1,15 @@
 <?php
-
 $USER = '';# Github ユーザー名
 $PASS = '';# Github パスワード
 $SECRET = '';#Github Webhook Secret
 
 /*===================================================
-	
+
 	# GithubのWebhookを使った自動デプロイ
 		* webhookのURLをこのファイルにする
 		* git clone / git pull を両方
 		* webhook.logファイル生成
-	
+
 ===================================================*/
 
 $sig = $_SERVER['HTTP_X_HUB_SIGNATURE'];#sha1=xxx...
@@ -25,38 +24,38 @@ if(@hash_equals($hmac,$sig)){
 	# 2タイプのPayloadに対応（json または x-www-form-urlencoded）
 	$payload = (preg_match('/json/',$type))? file_get_contents('php://input'): $_POST['payload'];
 	$payload = json_decode($payload,true);
-	
+
 	$repos = $payload['repository']['name'];# リポジトリ名
 	$clone_url = str_replace('https://', "https://{$USER}:{$PASS}@", $payload['repository']['clone_url']);# クローンURL
 	$ref = $payload['ref'];# ブランチ判定
 	$log = "[{$date}][{$adder}][{$repos}]:";# logテキスト
-	
+
 	# 既にクローンされている場合
 	if(is_dir($repos)){
-		
+
 		switch($ref){
-			
+
 			# マスターブランチ
 			case 'refs/heads/master':
 				exec("cd {$dir}/{$repos};git pull origin master");
 				$log.= "{$ref}をプルしました。";
-				
+
 				# リポジトリによって処理を変更
 				switch($repos){
-					
+
 					# FTPログインを試みる
 					case 'リポジトリ１':
 						$conn_id = ftp_ssl_connect('ホスト');
 						$login = ftp_login($conn_id, 'ユーザー', 'パスワード');
 						break;
-						
+
 					# ZIP化を試みる
 					case 'リポジトリ２':
 						$zip = "{$repos}.zip";# Zipする場所
 						$log.= "Zipファイル化を試みます。";
 						$log.= exec("cd {$dir};zip -r {$zip} {$repos} -x \*/.git/\*");
 				}
-				
+
 				# FTPログイン成功したら
 				if($login){
 					ftp_pasv($conn_id, true);
@@ -65,9 +64,9 @@ if(@hash_equals($hmac,$sig)){
 					ftp_close($conn_id);
 					$log.= "{$repos}をFTPでアプデしました。";
 				}
-				
+
 				break;
-				
+
 			# それ以外のブランチ
 			default: $log.= "{$ref}がプッシュされました。";
 		}
