@@ -1,6 +1,18 @@
 # github-webhook
-GithubのWebhookを利用した自動デプロイ用PHPファイル
-- Secret対応
-- Content typeは「json」と「x-www-form-urlencoded」の両方に対応
-- FTP転送対応
-- ZIPファイル化
+
+- 非公開ディレクトリに.git-cloneディレクトリ作成
+- プッシュされたリポジトリを.git-cloneにクローン
+- distディレクトリのみを公開ディレクトリに展開して配置
+
+## ディレクトリツリー
+エックスサーバーでの例
+
+├── .git-clone（非公開ディレクトリ）
+│   ├── github-webhook.log
+│   ├── リポジトリ名１（全体をクローン）
+│   └── リポジトリ名２（全体をクローン）
+│
+└── public_html（公開ディレクトリ）
+    ├── github-webhook.php <= ココにwebhookでアクセス
+    ├── リポジトリ名１（distの中身のみを展開して配置）
+    └── リポジトリ名２（distの中身のみを展開して配置）
