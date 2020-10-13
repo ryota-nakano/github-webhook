@@ -36,9 +36,12 @@ if(@hash_equals($hmac,$sig)){
 		switch($ref){
 
 			# マスターブランチ
+			case 'refs/heads/main':
 			case 'refs/heads/master':
-				exec("cd {$dir}/{$repos};git pull origin master");
+				$branch = end(explode('/',$ref));
+				exec("cd {$dir}/{$repos};git pull origin {$branch}");
 				$log.= "{$ref}をプルしました。";
+
 
 				# リポジトリによって処理を変更
 				switch($repos){
