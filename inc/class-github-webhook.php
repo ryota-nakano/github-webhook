@@ -64,7 +64,7 @@ class GithubWebhook {
 		$this->path = isset( $_GET['path'] ) ? $_GET['path'] : '';
 
 		// 絶対パス以外は、フルパスに変換
-		$this->path = ( ! preg_match( '/^\//', $this->path ) )
+		$this->path = ( ! preg_match( '/^[\/|\~]/', $this->path ) )
 			? dirname( __DIR__ ) . "/{$this->path}"
 			: $this->path;
 
